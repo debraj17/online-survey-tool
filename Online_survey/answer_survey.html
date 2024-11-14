@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Answer Survey - Survey World</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <section class="answer-survey">
+    <div class="container">
+      <h2>Answer Surveys</h2>
+
+      <div class="available-surveys">
+        <h3>Available Surveys</h3>
+        <ul id="availableSurveyList"></ul>
+      </div>
+
+      <div class="survey-answers">
+        <h3>Your Survey Answers</h3>
+        <ul id="surveyAnswersList"></ul>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    const surveys = JSON.parse(localStorage.getItem("surveys")) || [];
+
+    const availableSurveyList = document.getElementById("availableSurveyList");
+
+    surveys.forEach((survey, index) => {
+      const surveyItem = document.createElement("li");
+      surveyItem.textContent = `Survey ${index + 1}`;
+      surveyItem.onclick = () => displaySurvey(survey);
+      availableSurveyList.appendChild(surveyItem);
+    });
+
+    function displaySurvey(survey) {
+      const surveyAnswersList = document.getElementById("surveyAnswersList");
+      surveyAnswersList.innerHTML = "";
+
+      survey.questions.forEach(question => {
+        const questionItem = document.createElement("li");
+        questionItem.innerHTML = `
+          <strong>${question.questionText}</strong><br>
+          ${getAnswerInput(question)}
+        `;
+        surveyAnswersList.appendChild(questionItem);
+      });
+    }
+
+    function getAnswerInput(question) {
+      if (question.questionType === "text") {
+        return `<input type="text" placeholder="Your answer">`;
+      } else if (question.questionType === "multiple-choice" || question.questionType === "dropdown") {
+        return question.options.map(option => `<label><input type="radio" name="answer">${option}</label>`).join("<br>");
+      } else if (question.questionType === "rating") {
+        return `<input type="number" min="1" max="5" placeholder="Rate 1-5">`;
+      }
+    }
+  </script>
+</body>
+</html>
